@@ -14,6 +14,7 @@ class RoleSeeder extends Seeder
     {
         // Define roles
         $roles = ['super admin', 'admin', 'user'];
+        
         foreach ($roles as $roleName) {
             Role::firstOrCreate(['name' => $roleName]);
         }
@@ -26,6 +27,7 @@ class RoleSeeder extends Seeder
                 'password' => 'Programming1985',
                 'role' => 'super admin',
             ],
+
             [
                 'name' => 'Ali',
                 'email' => 'Ali@gmail.com',
