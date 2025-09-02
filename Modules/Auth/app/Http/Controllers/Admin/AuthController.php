@@ -21,7 +21,7 @@ class AuthController extends Controller
 
         // اجازه ورود فقط برای admin یا super admin
         if ($user->hasAnyRole(['admin', 'super admin'])) {
-            return redirect()->route('dashboard'); // مثلا صفحه داشبورد
+            return redirect()->route('admin.dashboard'); // مثلا صفحه داشبورد
         }
 
         // بقیه کاربران

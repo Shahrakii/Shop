@@ -1,4 +1,7 @@
 {
     "Auth": true,
-    "Permission": true
+    "Permission": true,
+    "Product": true,
+    "Core": true,
+    "Dashboard": true
 }
