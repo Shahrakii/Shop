@@ -3,102 +3,99 @@
 namespace Modules\Permission\Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
-use App\Models\User;
+use App\Models\Admin;
+use App\Models\Customer;
 
 class RolesAndPermissionsSeeder extends Seeder
 {
-    public function run(): void
+    public function run()
     {
-        // Reset cached roles and permissions
-        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+        // 1️⃣ Roles
+        $roles = ['super admin', 'admin', 'moderator'];
+        foreach ($roles as $role) {
+            Role::firstOrCreate(['name' => $role, 'guard_name' => 'admin']);
+        }
 
-        /**
-         * Step 1: Define all permissions with Persian labels
-         */
+        // 2️⃣ Permissions
         $permissions = [
-            // dashboards
-            ['name' => 'view admin dashboard', 'label' => 'مشاهده داشبورد ادمین'],
-            ['name' => 'view user dashboard', 'label' => 'مشاهده داشبورد کاربر'],
-
-            // brand
-            ['name' => 'create brand', 'label' => 'ایجاد برند'],
-            ['name' => 'delete brand', 'label' => 'حذف برند'],
-            ['name' => 'view brand', 'label' => 'مشاهده برند'],
-            ['name' => 'edit brand', 'label' => 'ویرایش برند'],
-
-            // category
-            ['name' => 'create category', 'label' => 'ایجاد دسته‌بندی'],
-            ['name' => 'edit category', 'label' => 'ویرایش دسته‌بندی'],
-            ['name' => 'delete category', 'label' => 'حذف دسته‌بندی'],
-            ['name' => 'view category', 'label' => 'مشاهده دسته‌بندی'],
+            'view admin dashboard',
+            'manage users',
+            'manage products',
+            'manage orders',
+            'manage settings'
         ];
-
         foreach ($permissions as $perm) {
-            Permission::firstOrCreate(
-                ['name' => $perm['name']],
-                ['label' => $perm['label']] // make sure your permissions table has a 'label' column
-            );
+            Permission::firstOrCreate(['name' => $perm, 'guard_name' => 'admin']);
         }
 
-        /**
-         * Step 2: Define roles with labels and assign permissions
-         */
-        $roles = [
-            ['name' => 'super admin', 'label' => 'مدیر کل', 'permissions' => array_column($permissions, 'name')],
-            ['name' => 'admin', 'label' => 'ادمین', 'permissions' => [
-                'view admin dashboard',
-                'view user dashboard',
-                'create brand',
-                'delete brand',
-                'view brand',
-                'edit brand',
-                'create category',
-                'edit category',
-                'delete category',
-                'view category',
-            ]],
-            ['name' => 'user', 'label' => 'کاربر', 'permissions' => ['view user dashboard']],
+        // 3️⃣ Assign permissions to roles
+        Role::findByName('super admin', 'admin')->syncPermissions(Permission::all());
+        Role::findByName('admin', 'admin')->syncPermissions([
+            'view admin dashboard', 'manage users', 'manage products', 'manage orders'
+        ]);
+        Role::findByName('moderator', 'admin')->syncPermissions([
+            'view admin dashboard', 'manage orders'
+        ]);
+
+        // 4️⃣ Seed Admins
+        $admins = [
+            [
+                'name' => 'Ali',
+                'email' => 'ali@example.com',
+                'phone_number' => '+989123456789',
+                'password' => Hash::make('Ali12345'),
+                'role' => 'admin',
+            ],
+            [
+                'name' => 'Shahryar',
+                'email' => 'Shahryar.sky2014@gmail.com',
+                'phone_number' => '+989113166055',
+                'password' => Hash::make('Programming1985'),
+                'role' => 'super admin',
+            ],
         ];
 
-        foreach ($roles as $roleData) {
-            $role = Role::firstOrCreate(
-                ['name' => $roleData['name']],
-                ['label' => $roleData['label']] // make sure your roles table has a 'label' column
-            );
-            $role->syncPermissions($roleData['permissions']);
-        }
-
-        /**
-         * Step 3: Define users and assign roles
-         */
-        $users = [
-            ['name' => 'Shahryar', 'email' => 'Shahryar.sky2014@gmail.com', 'password' => 'Programming1985', 'role' => 'super admin'],
-            ['name' => 'Ali', 'email' => 'Ali@gmail.com', 'password' => 'Ali1234', 'role' => 'admin'],
-        ];
-
-        foreach ($users as $data) {
-            $user = User::firstOrCreate(
+        foreach ($admins as $data) {
+            $admin = Admin::firstOrCreate(
                 ['email' => $data['email']],
                 [
                     'name' => $data['name'],
-                    'password' => Hash::make($data['password']),
+                    'phone_number' => $data['phone_number'],
+                    'password' => $data['password'],
+                    'status' => 1
                 ]
             );
-
-            // Assign role
-            $user->assignRole($data['role']);
-
-            // Optional: sync with custom pivot table `user_roles`
-            $role = Role::where('name', $data['role'])->first();
-            if ($role) {
-                DB::table('user_roles')->updateOrInsert(
-                    ['user_id' => $user->id, 'role_id' => $role->id]
-                );
-            }
+            $admin->assignRole($data['role']);
         }
+
+        // 5️⃣ Seed Customers (no permissions)
+        $customers = [
+            [
+                'name' => 'Reza',
+                'email' => 'reza@gmail.com',
+                'phone_number' => '+989123456780',
+                'password' => Hash::make('Reza12345'),
+                'status' => 0
+            ],
+            [
+                'name' => 'Sara',
+                'email' => 'sara@gmail.com',
+                'phone_number' => '+989123456781',
+                'password' => Hash::make('Sara12345'),
+                'status' => 0
+            ]
+        ];
+
+        foreach ($customers as $data) {
+            Customer::firstOrCreate(
+                ['email' => $data['email']],
+                $data
+            );
+        }
+
+        $this->command->info('Roles, permissions, admins, and customers seeded successfully!');
     }
 }
