@@ -4,5 +4,5 @@
     "Product": true,
     "Core": true,
     "Dashboard": true,
-    "PermissionTest": true
+    "Admin": true
 }

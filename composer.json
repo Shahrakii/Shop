@@ -30,7 +30,13 @@
         "psr-4": {
             "App\\": "app/",
             "Database\\Factories\\": "database/factories/",
-            "Database\\Seeders\\": "database/seeders/"
+            "Database\\Seeders\\": "database/seeders/",
+            "Modules\\Admin\\": "Modules/Admin/app/",
+            "Modules\\Auth\\": "Modules/Auth/app/",
+            "Modules\\Permission\\": "Modules/Permission/app/",
+            "Modules\\Dashboard\\": "Modules/Dashboard/app/",
+            "Modules\\Core\\": "Modules/Core/app/",
+            "Modules\\Product\\": "Modules/Product/app/"
         }
     },
     "autoload-dev": {

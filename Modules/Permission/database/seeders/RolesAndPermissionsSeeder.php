@@ -34,6 +34,11 @@ class RolesAndPermissionsSeeder extends Seeder
             ['name' => 'make role', 'label' => 'ایجاد نقش'],
             ['name' => 'edit role', 'label' => 'ویرایش نقش'],
             ['name' => 'delete role', 'label' => 'حذف نقش'],
+            ['name' => 'view admins section', 'label' => 'مشاهده بخش ادمین'],
+            ['name' => 'view admin', 'label' => 'مشاهده ادمین'],
+            ['name' => 'make admin', 'label' => 'ایجاد ادمین'],
+            ['name' => 'edit admin', 'label' => 'ویرایش ادمین'],
+            ['name' => 'delete admin', 'label' => 'حذف ادمین'],
         ];
 
         // Create permissions
