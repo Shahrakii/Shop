@@ -13,38 +13,48 @@ class RolesAndPermissionsSeeder extends Seeder
 {
     public function run()
     {
-        // 1️⃣ Roles
-        $roles = ['super admin', 'admin', 'moderator'];
-        foreach ($roles as $role) {
-            Role::firstOrCreate(['name' => $role, 'guard_name' => 'admin']);
-        }
-
-        // 2️⃣ Permissions
-        $permissions = [
-            'view admin dashboard',
-            'manage users',
-            'manage products',
-            'manage orders',
-            'manage settings'
+        // Define roles with labels
+        $roles = [
+            ['name' => 'super admin', 'label' => 'سوپر ادمین', 'guard' => 'admin'],
+            ['name' => 'admin', 'label' => 'ادمین', 'guard' => 'admin'],
         ];
-        foreach ($permissions as $perm) {
-            Permission::firstOrCreate(['name' => $perm, 'guard_name' => 'admin']);
+
+        // Create roles
+        foreach ($roles as $roleData) {
+            Role::firstOrCreate(
+                ['name' => $roleData['name'], 'guard_name' => $roleData['guard']],
+                ['label' => $roleData['label']]
+            );
         }
 
-        // 3️⃣ Assign permissions to roles
+        // Define permissions with labels
+        $permissions = [
+            ['name' => 'view admin dashboard', 'label' => 'مشاهده داشبورد ادمین'],
+            ['name' => 'view roles section', 'label' => 'مشاهده بخش نقش ها'],
+            ['name' => 'make role', 'label' => 'ایجاد نقش'],
+            ['name' => 'edit role', 'label' => 'ویرایش نقش'],
+            ['name' => 'delete role', 'label' => 'حذف نقش'],
+        ];
+
+        // Create permissions
+        foreach ($permissions as $perm) {
+            Permission::firstOrCreate(
+                ['name' => $perm['name'], 'guard_name' => 'admin'],
+                ['label' => $perm['label']]
+            );
+        }
+
+        // Assign permissions to roles
         Role::findByName('super admin', 'admin')->syncPermissions(Permission::all());
         Role::findByName('admin', 'admin')->syncPermissions([
-            'view admin dashboard', 'manage users', 'manage products', 'manage orders'
-        ]);
-        Role::findByName('moderator', 'admin')->syncPermissions([
-            'view admin dashboard', 'manage orders'
+            'view admin dashboard',
         ]);
 
-        // 4️⃣ Seed Admins
+        // Seed Admins
         $admins = [
             [
                 'name' => 'Ali',
-                'email' => 'ali@example.com',
+                'email' => 'ali@gmail.com',
                 'phone_number' => '+989123456789',
                 'password' => Hash::make('Ali12345'),
                 'role' => 'admin',
@@ -69,31 +79,6 @@ class RolesAndPermissionsSeeder extends Seeder
                 ]
             );
             $admin->assignRole($data['role']);
-        }
-
-        // 5️⃣ Seed Customers (no permissions)
-        $customers = [
-            [
-                'name' => 'Reza',
-                'email' => 'reza@gmail.com',
-                'phone_number' => '+989123456780',
-                'password' => Hash::make('Reza12345'),
-                'status' => 0
-            ],
-            [
-                'name' => 'Sara',
-                'email' => 'sara@gmail.com',
-                'phone_number' => '+989123456781',
-                'password' => Hash::make('Sara12345'),
-                'status' => 0
-            ]
-        ];
-
-        foreach ($customers as $data) {
-            Customer::firstOrCreate(
-                ['email' => $data['email']],
-                $data
-            );
         }
 
         $this->command->info('Roles, permissions, admins, and customers seeded successfully!');

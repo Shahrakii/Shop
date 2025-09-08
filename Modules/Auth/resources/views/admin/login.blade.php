@@ -6,12 +6,7 @@
     <title>ورود ادمین</title>
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Vazirmatn', sans-serif;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Vazirmatn', sans-serif; }
 
         body {
             height: 100vh;
@@ -41,16 +36,9 @@
             text-shadow: 1px 1px 5px rgba(0,0,0,0.3);
         }
 
-        .login-container form div {
-            margin-bottom: 20px;
-            text-align: right;
-        }
+        .login-container form div { margin-bottom: 20px; text-align: right; }
 
-        .login-container label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 600;
-        }
+        .login-container label { display: block; margin-bottom: 5px; font-weight: 600; }
 
         .login-container input {
             width: 100%;
@@ -63,9 +51,7 @@
             color: #fff;
         }
 
-        .login-container input::placeholder {
-            color: rgba(255,255,255,0.7);
-        }
+        .login-container input::placeholder { color: rgba(255,255,255,0.7); }
 
         .login-container button {
             width: 100%;
@@ -74,7 +60,6 @@
             border: none;
             font-size: 18px;
             font-weight: 700;
-            background: #00c6ff;
             background: linear-gradient(90deg, #00c6ff, #0072ff);
             color: #fff;
             cursor: pointer;
@@ -95,12 +80,8 @@
         }
 
         @media (max-width: 500px) {
-            .login-container {
-                padding: 25px;
-            }
-            .login-container h2 {
-                font-size: 24px;
-            }
+            .login-container { padding: 25px; }
+            .login-container h2 { font-size: 24px; }
         }
     </style>
 </head>
@@ -110,8 +91,8 @@
         <form action="{{ route('admin.login') }}" method="POST">
             @csrf
             <div>
-                <label>ایمیل</label>
-                <input type="email" name="email" placeholder="ایمیل خود را وارد کنید" required>
+                <label>ایمیل یا شماره موبایل</label>
+                <input type="text" name="email" placeholder="ایمیل یا شماره موبایل خود را وارد کنید" required>
             </div>
             <div>
                 <label>رمز عبور</label>

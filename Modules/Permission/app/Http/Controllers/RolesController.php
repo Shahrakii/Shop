@@ -4,51 +4,97 @@ namespace Modules\Permission\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
+use Modules\Permission\Http\Requests\RoleRequest;
 
 class RolesController extends Controller
 {
     // List all roles
-    public function index()
+    public function index(Request $request)
     {
-        $roles = Role::all();
-        return response()->json($roles);
+        $roles = Role::paginate(10);
+
+        if ($request->wantsJson()) {
+            return response()->json($roles);
+        }
+
+        return view('Permission::roles.index', compact('roles'));
     }
 
-    // Create a new role
-    public function store(Request $request)
+    // Show the create form
+    public function create()
     {
-        $request->validate([
-            'name' => 'required|unique:roles,name'
+        $permissions = Permission::all();
+        return view('Permission::roles.create', compact('permissions'));
+    }
+
+    // Store a new role
+    public function store(RoleRequest $request)
+    {
+        $role = Role::create([
+            'name' => $request->name,
+            'label' => $request->label,
+            'guard_name' => 'admin',
         ]);
 
-        $role = Role::create(['name' => $request->name]);
-        return response()->json($role, 201);
+        if ($request->has('permissions')) {
+            // Convert permission IDs to names
+            $permissionNames = Permission::whereIn('id', $request->permissions)
+                                        ->pluck('name')
+                                        ->toArray();
+            $role->syncPermissions($permissionNames);
+        }
+
+        return redirect()->route('admin.roles.index')
+            ->with('success', 'نقش با موفقیت ایجاد شد!');
     }
 
-    // Show a role
-    public function show($id)
+    // Show edit form
+    public function edit($id)
     {
         $role = Role::findOrFail($id);
-        return response()->json($role);
+        $permissions = Permission::all();
+
+        return view('Permission::roles.edit', compact('role', 'permissions'));
     }
 
-    // Update a role
-    public function update(Request $request, $id)
+    // Update role
+    public function update(Request $request, Role $role)
     {
-        $role = Role::findOrFail($id);
-        $request->validate([
-            'name' => 'required|unique:roles,name,' . $role->id
-        ]);
-        $role->update(['name' => $request->name]);
-        return response()->json($role);
+        // Prevent editing Super Admin by anyone except himself
+        if ($role->name === 'super admin' && !auth()->user()->hasRole('super admin')) {
+            return redirect()->route('admin.roles.index')
+                ->with('error', 'شما اجازه ویرایش نقش سوپر ادمین را ندارید!');
+        }
+
+        $role->update($request->only('name', 'label'));
+
+        if ($request->has('permissions')) {
+            // Convert IDs to permission names
+            $permissionNames = Permission::whereIn('id', $request->permissions)
+                                        ->pluck('name')
+                                        ->toArray();
+            $role->syncPermissions($permissionNames);
+        }
+
+        return redirect()->route('admin.roles.index')
+                        ->with('success', 'نقش با موفقیت بروزرسانی شد!');
     }
 
-    // Delete a role
-    public function destroy($id)
+    // Delete role
+    public function destroy(Request $request, Role $role)
     {
-        $role = Role::findOrFail($id);
+        // Prevent deletion of protected roles
+        $protectedRoles = ['super admin', 'admin'];
+        if (in_array($role->name, $protectedRoles)) {
+            return redirect()->route('admin.roles.index')
+                ->with('error', 'این نقش قابل حذف نیست!');
+        }
+
         $role->delete();
-        return response()->json(null, 204);
+
+        return redirect()->route('admin.roles.index')
+            ->with('success', 'نقش با موفقیت حذف شد!');
     }
 }

@@ -12,7 +12,7 @@ class PermissionController extends Controller
      */
     public function index()
     {
-        return view('permission::index');
+        return view('Permission::index');
     }
 
     /**
@@ -20,7 +20,7 @@ class PermissionController extends Controller
      */
     public function create()
     {
-        return view('permission::create');
+        return view('Permission::create');
     }
 
     /**
@@ -33,7 +33,7 @@ class PermissionController extends Controller
      */
     public function show($id)
     {
-        return view('permission::show');
+        return view('Permission::show');
     }
 
     /**
@@ -41,7 +41,7 @@ class PermissionController extends Controller
      */
     public function edit($id)
     {
-        return view('permission::edit');
+        return view('Permission::edit');
     }
 
     /**

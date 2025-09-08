@@ -12,7 +12,9 @@
         "php": "^8.2",
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.10.1",
+        "morilog/jalali": "^3.4",
         "nwidart/laravel-modules": "^12.0",
+        "nwidart/modules": "^1.0",
         "spatie/laravel-permission": "^6.21"
     },
     "require-dev": {
