@@ -3,5 +3,6 @@
     "Permission": true,
     "Product": true,
     "Core": true,
-    "Dashboard": true
+    "Dashboard": true,
+    "Admin": true
 }

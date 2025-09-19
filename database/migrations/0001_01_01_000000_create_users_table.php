@@ -18,7 +18,7 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::create('customers', function (Blueprint $table) {
+        Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
@@ -41,7 +41,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('admins');
-        Schema::dropIfExists('customers');
+        Schema::dropIfExists('users');
         Schema::dropIfExists('sessions');
     }
 };

@@ -1,23 +1,24 @@
 <?php
 
-namespace Modules\Auth\Http\Controllers\Admin;
+namespace Modules\Admin\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 
 class AdminController extends Controller
 {
-    public function index()
+    public function __construct()
     {
-        $user = Auth::user();
+        $this->middleware('auth');
+    }
 
-        // فقط admin یا super admin میتونن ببینن
-        if (! $user->hasAnyRole(['admin', 'super admin'])) {
-            return redirect()->route('auth::admin\dashboard')->withErrors([
-                'email' => 'دسترسی به پنل ادمین ندارید'
-            ]);
+    public function dashboard()
+    {
+        // Optionally check role or permission
+        if (auth()->user()->hasAnyRole(['customer'])) {
+            abort(403, 'شما دسترسی ندارید');
         }
 
-        return view('auth::admin.dashboard', compact('user'));
+        return view('admin::dashboard');
     }
 }

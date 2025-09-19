@@ -33,9 +33,9 @@ return [
             'provider' => 'admins',
         ],
 
-        'customer' => [
+        'user' => [
             'driver' => 'session',
-            'provider' => 'customers',
+            'provider' => 'users',
         ],
     ],
 
@@ -55,9 +55,9 @@ return [
             'model' => App\Models\Admin::class,
         ],
 
-        'customers' => [
+        'users' => [
             'driver' => 'eloquent',
-            'model' => App\Models\Customer::class,
+            'model' => App\Models\User::class,
         ],
     ],
 
